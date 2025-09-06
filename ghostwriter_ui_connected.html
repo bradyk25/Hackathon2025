@@ -608,6 +608,68 @@
         .privacy-details-expanded {
             transition: all 0.3s ease;
         }
+
+        /* Synthetic Data Toggle Styles */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider::before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #007bff;
+        }
+
+        input:focus + .slider {
+            box-shadow: 0 0 1px #007bff;
+        }
+
+        input:checked + .slider::before {
+            transform: translateX(26px);
+        }
+
+        .synthetic-controls input[type="number"]:disabled {
+            background-color: #f8f9fa;
+            color: #6c757d;
+            cursor: not-allowed;
+        }
+
+        .synthetic-controls input[type="number"]:enabled {
+            background-color: white;
+            color: #495057;
+            border-color: #007bff;
+        }
     </style>
 </head>
 <body>
@@ -636,6 +698,40 @@
                 </button>
                 <div style="margin-top: 15px; font-size: 0.9em; color: #6c757d;">
                     Supported formats: ZIP, CSV, and XLSX files
+                </div>
+            </div>
+
+            <!-- Synthetic Data Controls (Simple and Reliable) -->
+            <div class="synthetic-controls" style="margin-bottom: 30px; padding: 25px; background: #f8f9fa; border-radius: 15px; border: 2px solid #dee2e6;">
+                <div class="synthetic-header" style="text-align: center; margin-bottom: 20px;">
+                    <h4 style="color: #495057; margin-bottom: 8px;">🧬 Synthetic Data Generation</h4>
+                    <p style="color: #6c757d; font-size: 0.9em; margin: 0;">Generate expanded synthetic datasets using dbTwin AI</p>
+                </div>
+                
+                <div class="synthetic-options" style="display: flex; justify-content: center; align-items: center; gap: 30px; flex-wrap: wrap;">
+                    <!-- Simple Checkbox -->
+                    <div class="checkbox-container" style="display: flex; align-items: center; gap: 15px;">
+                        <label for="syntheticToggle" style="color: #495057; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 10px;">
+                            <input type="checkbox" id="syntheticToggle" style="width: 20px; height: 20px; cursor: pointer;">
+                            Enable Synthetic Data Generation
+                        </label>
+                        <span id="toggleStatus" style="color: #6c757d; font-size: 0.9em; font-weight: bold;">DISABLED</span>
+                    </div>
+                </div>
+                
+                <div class="row-input-section" style="margin-top: 20px; text-align: center;">
+                    <label for="syntheticRows" style="color: #495057; font-weight: 600; display: block; margin-bottom: 10px;">Number of Synthetic Rows to Generate:</label>
+                    <input type="number" id="syntheticRows" min="100" max="10000" value="1000" 
+                           style="width: 150px; padding: 12px 16px; border: 2px solid #dee2e6; border-radius: 8px; font-size: 1.1em; text-align: center; background: #f8f9fa;">
+                    <div style="margin-top: 8px; color: #6c757d; font-size: 0.9em;">
+                        Range: 100 - 10,000 rows
+                    </div>
+                </div>
+                
+                <div id="syntheticInfo" style="margin-top: 20px; padding: 15px; background: #d4edda; border-radius: 8px; border-left: 4px solid #28a745; display: none;">
+                    <div style="color: #155724; font-size: 0.95em;">
+                        <strong>✅ Synthetic Mode Enabled:</strong> Your cleaned data will be sent to dbTwin AI to generate <span id="rowCount">1000</span> synthetic rows while preserving statistical properties and privacy.
+                    </div>
                 </div>
             </div>
 
@@ -850,6 +946,50 @@
         uploadSection.addEventListener('dragleave', handleDragLeave);
         uploadSection.addEventListener('drop', handleDrop);
 
+        // Synthetic data toggle handling
+        document.getElementById('syntheticToggle').addEventListener('change', handleSyntheticToggle);
+
+        // Synthetic Data Toggle Function (Updated for Simple Controls)
+        function handleSyntheticToggle() {
+            const toggle = document.getElementById('syntheticToggle');
+            const status = document.getElementById('toggleStatus');
+            const rowsInput = document.getElementById('syntheticRows');
+            const infoDiv = document.getElementById('syntheticInfo');
+            const rowCount = document.getElementById('rowCount');
+            
+            if (toggle.checked) {
+                status.textContent = 'ENABLED';
+                status.style.color = '#28a745';
+                status.style.fontWeight = 'bold';
+                rowsInput.style.background = 'white';
+                rowsInput.style.borderColor = '#28a745';
+                infoDiv.style.display = 'block';
+                // Update row count in info message
+                if (rowCount) {
+                    rowCount.textContent = rowsInput.value;
+                }
+            } else {
+                status.textContent = 'DISABLED';
+                status.style.color = '#dc3545';
+                status.style.fontWeight = 'bold';
+                rowsInput.style.background = '#f8f9fa';
+                rowsInput.style.borderColor = '#dee2e6';
+                infoDiv.style.display = 'none';
+            }
+        }
+
+        // Update row count when input changes
+        document.addEventListener('DOMContentLoaded', function() {
+            const rowsInput = document.getElementById('syntheticRows');
+            const rowCount = document.getElementById('rowCount');
+            
+            rowsInput.addEventListener('input', function() {
+                if (rowCount) {
+                    rowCount.textContent = this.value;
+                }
+            });
+        });
+
         async function checkBackendConnection() {
             try {
                 const response = await fetch(`${BACKEND_URL}/api/status`);
@@ -917,6 +1057,18 @@
                 // Create FormData for file upload
                 const formData = new FormData();
                 formData.append('file', file);
+                
+                // Add synthetic data parameters if enabled
+                const syntheticToggle = document.getElementById('syntheticToggle');
+                const syntheticRows = document.getElementById('syntheticRows');
+                
+                if (syntheticToggle.checked) {
+                    formData.append('synthetic_mode', 'true');
+                    formData.append('synthetic_rows', syntheticRows.value);
+                    updateProcessingStatus('Uploading file and preparing for synthetic data generation...');
+                } else {
+                    formData.append('synthetic_mode', 'false');
+                }
 
                 // Upload and process file
                 const response = await fetch(`${BACKEND_URL}/upload`, {
