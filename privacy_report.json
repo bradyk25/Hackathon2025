@@ -1,0 +1,54 @@
+{
+  "pii_detected": {
+    "CLAIM_ID": {
+      "type": "claim_identifier",
+      "confidence": 0.95
+    },
+    "MEMBER_ID": {
+      "type": "member_identifier",
+      "confidence": 0.95
+    },
+    "ID": {
+      "type": "patient_identifier",
+      "confidence": 0.95
+    },
+    "LAST_NAME": {
+      "type": "person_name",
+      "confidence": 0.98
+    },
+    "AGE": {
+      "type": "age",
+      "confidence": 0.9
+    },
+    "PROVIDER_ZIP": {
+      "type": "location",
+      "confidence": 0.85
+    }
+  },
+  "phi_detected": {
+    "DIAGNOSIS_CODE": {
+      "type": "medical_diagnosis",
+      "confidence": 0.95
+    },
+    "PROCEDURE_CODE": {
+      "type": "medical_procedure",
+      "confidence": 0.9
+    },
+    "DRG_CODE": {
+      "type": "medical_classification",
+      "confidence": 0.85
+    },
+    "ICD9_PROCEDURE": {
+      "type": "medical_procedure",
+      "confidence": 0.9
+    }
+  },
+  "processing_summary": {
+    "job_id": "0c131e20-1d69-48cb-97b4-2cb73399e8f9",
+    "original_records": 5,
+    "cleaned_records": 5,
+    "claims_count": 5,
+    "patient_count": 0,
+    "processed_at": "2025-09-06T04:04:44.855006"
+  }
+}

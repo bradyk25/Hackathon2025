@@ -1,0 +1,44 @@
+{
+  "name": "ghostwriter-hackathon",
+  "version": "1.0.0",
+  "description": "Synthetic Healthcare Data Generator - Optura Hackathon",
+  "main": "backend/server.js",
+  "scripts": {
+    "dev": "concurrently \"npm run backend:dev\" \"npm run frontend:dev\" \"npm run python:dev\"",
+    "backend:dev": "cd backend && npm run dev",
+    "frontend:dev": "cd frontend && npm start",
+    "python:dev": "cd data-pipeline && python -m uvicorn main:app --reload --port 8001",
+    "build": "npm run frontend:build && npm run backend:build",
+    "frontend:build": "cd frontend && npm run build",
+    "backend:build": "cd backend && npm run build",
+    "test": "npm run test:frontend && npm run test:backend && npm run test:python",
+    "test:frontend": "cd frontend && npm test",
+    "test:backend": "cd backend && npm test",
+    "test:python": "cd data-pipeline && python -m pytest",
+    "start": "npm run backend:start",
+    "backend:start": "cd backend && npm start",
+    "setup": "npm run install:all && npm run setup:python",
+    "install:all": "npm install && cd frontend && npm install && cd ../backend && npm install",
+    "setup:python": "cd data-pipeline && pip install -r requirements.txt",
+    "lint": "npm run lint:frontend && npm run lint:backend",
+    "lint:frontend": "cd frontend && npm run lint",
+    "lint:backend": "cd backend && npm run lint"
+  },
+  "keywords": [
+    "healthcare",
+    "synthetic-data",
+    "privacy",
+    "hackathon",
+    "optura"
+  ],
+  "author": "Hackathon Team",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "nodemon": "^3.0.1"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  }
+}

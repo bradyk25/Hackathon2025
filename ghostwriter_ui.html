@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ghostwriter - Healthcare Data Privacy Processor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            font-weight: 300;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            padding: 40px;
+        }
+
+        .upload-section {
+            background: #f8f9fa;
+            border: 3px dashed #dee2e6;
+            border-radius: 15px;
+            padding: 60px 40px;
+            text-align: center;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .upload-section.dragover {
+            border-color: #007bff;
+            background: #e3f2fd;
+        }
+
+        .upload-icon {
+            font-size: 4em;
+            color: #6c757d;
+            margin-bottom: 20px;
+        }
+
+        .upload-text {
+            font-size: 1.3em;
+            color: #495057;
+            margin-bottom: 20px;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .upload-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .upload-btn:hover {
+            background: #0056b3;
+        }
+
+        .processing-section {
+            display: none;
+            text-align: center;
+            padding: 40px;
+            background: #fff3cd;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .results-section {
+            display: none;
+            background: #d4edda;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .results-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .success-icon {
+            font-size: 2em;
+            color: #28a745;
+            margin-right: 15px;
+        }
+
+        .results-title {
+            font-size: 1.5em;
+            color: #155724;
+            font-weight: 600;
+        }
+
+        .privacy-summary {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .privacy-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .privacy-item:last-child {
+            border-bottom: none;
+        }
+
+        .privacy-label {
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .privacy-value {
+            color: #28a745;
+            font-weight: 500;
+        }
+
+        .download-section {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .download-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.3s;
+        }
+
+        .download-btn:hover {
+            background: #1e7e34;
+        }
+
+        .preview-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .preview-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #495057;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .data-table th {
+            background: #495057;
+            color: white;
+            font-weight: 600;
+        }
+
+        .data-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .redacted {
+            background: #dc3545;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        .anonymized {
+            background: #ffc107;
+            color: #212529;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        .error-section {
+            display: none;
+            background: #f8d7da;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .error-icon {
+            font-size: 3em;
+            color: #dc3545;
+            margin-bottom: 15px;
+        }
+
+        .error-message {
+            color: #721c24;
+            font-size: 1.1em;
+        }
+
+        .reset-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        .reset-btn:hover {
+            background: #545b62;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .feature-card {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 12px;
+            border-left: 5px solid #007bff;
+        }
+
+        .feature-icon {
+            font-size: 2em;
+            color: #007bff;
+            margin-bottom: 15px;
+        }
+
+        .feature-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        .feature-description {
+            color: #6c757d;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏥 Ghostwriter</h1>
+            <p>Healthcare Data Privacy Processor - Upload, Clean, Download</p>
+        </div>
+
+        <div class="main-content">
+            <!-- Upload Section -->
+            <div class="upload-section" id="uploadSection">
+                <div class="upload-icon">📁</div>
+                <div class="upload-text">
+                    <strong>Upload your healthcare data file</strong><br>
+                    Drag and drop a ZIP file containing CSV data, or click to browse
+                </div>
+                <input type="file" id="fileInput" class="file-input" accept=".zip,.csv" />
+                <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
+                    Choose File
+                </button>
+                <div style="margin-top: 15px; font-size: 0.9em; color: #6c757d;">
+                    Supported formats: ZIP files containing CSV data
+                </div>
+            </div>
+
+            <!-- Processing Section -->
+            <div class="processing-section" id="processingSection">
+                <div class="spinner"></div>
+                <h3>Processing Your Healthcare Data...</h3>
+                <p>Applying privacy protection and generating clean dataset</p>
+                <div id="processingStatus" style="margin-top: 15px; font-weight: 600;"></div>
+            </div>
+
+            <!-- Results Section -->
+            <div class="results-section" id="resultsSection">
+                <div class="results-header">
+                    <div class="success-icon">✅</div>
+                    <div class="results-title">Privacy Processing Complete!</div>
+                </div>
+
+                <div class="privacy-summary">
+                    <div class="privacy-item">
+                        <span class="privacy-label">Records Processed</span>
+                        <span class="privacy-value" id="recordCount">-</span>
+                    </div>
+                    <div class="privacy-item">
+                        <span class="privacy-label">PII Fields Protected</span>
+                        <span class="privacy-value" id="piiCount">-</span>
+                    </div>
+                    <div class="privacy-item">
+                        <span class="privacy-label">PHI Fields Identified</span>
+                        <span class="privacy-value" id="phiCount">-</span>
+                    </div>
+                    <div class="privacy-item">
+                        <span class="privacy-label">Privacy Compliance</span>
+                        <span class="privacy-value">HIPAA Compliant ✅</span>
+                    </div>
+                </div>
+
+                <div class="download-section">
+                    <button class="download-btn" id="downloadCleanBtn">
+                        📥 Download Clean CSV
+                    </button>
+                    <button class="download-btn" id="downloadReportBtn">
+                        📊 Download Privacy Report
+                    </button>
+                </div>
+
+                <div class="preview-section">
+                    <div class="preview-title">📋 Data Preview (First 5 Records)</div>
+                    <div id="dataPreview"></div>
+                </div>
+            </div>
+
+            <!-- Error Section -->
+            <div class="error-section" id="errorSection">
+                <div class="error-icon">❌</div>
+                <div class="error-message" id="errorMessage"></div>
+                <button class="reset-btn" onclick="resetInterface()">Try Again</button>
+            </div>
+
+            <!-- Features Section -->
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <div class="feature-title">Privacy Protection</div>
+                    <div class="feature-description">
+                        Automatically detects and protects PII/PHI data including names, ages, and identifiers
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🏥</div>
+                    <div class="feature-title">Healthcare Focused</div>
+                    <div class="feature-description">
+                        Specialized for healthcare data with medical code preservation and HIPAA compliance
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <div class="feature-title">Data Utility</div>
+                    <div class="feature-description">
+                        Maintains statistical utility for analysis while ensuring complete privacy protection
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <div class="feature-title">Instant Processing</div>
+                    <div class="feature-description">
+                        Fast, automated processing with real-time preview and immediate download
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let processedData = null;
+        let privacyReport = null;
+
+        // File upload handling
+        document.getElementById('fileInput').addEventListener('change', handleFileUpload);
+        
+        // Drag and drop handling
+        const uploadSection = document.getElementById('uploadSection');
+        uploadSection.addEventListener('dragover', handleDragOver);
+        uploadSection.addEventListener('dragleave', handleDragLeave);
+        uploadSection.addEventListener('drop', handleDrop);
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            uploadSection.classList.add('dragover');
+        }
+
+        function handleDragLeave(e) {
+            e.preventDefault();
+            uploadSection.classList.remove('dragover');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            uploadSection.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                processFile(files[0]);
+            }
+        }
+
+        function handleFileUpload(e) {
+            const file = e.target.files[0];
+            if (file) {
+                processFile(file);
+            }
+        }
+
+        async function processFile(file) {
+            // Show processing section
+            document.getElementById('uploadSection').style.display = 'none';
+            document.getElementById('processingSection').style.display = 'block';
+            document.getElementById('resultsSection').style.display = 'none';
+            document.getElementById('errorSection').style.display = 'none';
+
+            try {
+                // Simulate file processing steps
+                updateProcessingStatus('Reading file...');
+                await sleep(1000);
+
+                updateProcessingStatus('Detecting PII/PHI fields...');
+                await sleep(1500);
+
+                updateProcessingStatus('Applying privacy protection...');
+                await sleep(2000);
+
+                updateProcessingStatus('Generating clean dataset...');
+                await sleep(1000);
+
+                // Simulate processing results (in real implementation, this would call your Python backend)
+                const mockResults = await simulateDataProcessing(file);
+                
+                showResults(mockResults);
+
+            } catch (error) {
+                showError('Failed to process file: ' + error.message);
+            }
+        }
+
+        function updateProcessingStatus(status) {
+            document.getElementById('processingStatus').textContent = status;
+        }
+
+        async function simulateDataProcessing(file) {
+            // In real implementation, this would send the file to your Python backend
+            // For demo purposes, we'll simulate the processing
+            
+            return {
+                recordCount: 13,
+                piiFieldsProtected: 6,
+                phiFieldsIdentified: 4,
+                cleanedData: [
+                    {
+                        'CLAIM_ID': 'CLM62009',
+                        'MEMBER_ID': 'MBR6015',
+                        'LAST_NAME': '[REDACTED_NAME]',
+                        'AGE': '70_Plus',
+                        'GENDER': 'F',
+                        'CLAIM_COST': '11415.21',
+                        'STATUS': 'PAID'
+                    },
+                    {
+                        'CLAIM_ID': 'CLM42696',
+                        'MEMBER_ID': 'MBR4400',
+                        'LAST_NAME': '[REDACTED_NAME]',
+                        'AGE': '70_Plus',
+                        'GENDER': 'F',
+                        'CLAIM_COST': '9343.34',
+                        'STATUS': 'PAID'
+                    },
+                    {
+                        'CLAIM_ID': 'CLM82407',
+                        'MEMBER_ID': 'MBR7027',
+                        'LAST_NAME': '[REDACTED_NAME]',
+                        'AGE': '50-69',
+                        'GENDER': 'F',
+                        'CLAIM_COST': '24083.16',
+                        'STATUS': 'PAID'
+                    }
+                ],
+                privacyReport: {
+                    pii_detected: {
+                        'LAST_NAME': { type: 'person_name', confidence: 0.98 },
+                        'AGE': { type: 'age', confidence: 0.90 },
+                        'CLAIM_ID': { type: 'identifier', confidence: 0.95 }
+                    },
+                    phi_detected: {
+                        'DIAGNOSIS_CODE': { type: 'medical_diagnosis', confidence: 0.95 },
+                        'PROCEDURE_CODE': { type: 'medical_procedure', confidence: 0.90 }
+                    }
+                }
+            };
+        }
+
+        function showResults(results) {
+            processedData = results;
+            privacyReport = results.privacyReport;
+
+            // Hide processing, show results
+            document.getElementById('processingSection').style.display = 'none';
+            document.getElementById('resultsSection').style.display = 'block';
+
+            // Update summary
+            document.getElementById('recordCount').textContent = results.recordCount;
+            document.getElementById('piiCount').textContent = results.piiFieldsProtected;
+            document.getElementById('phiCount').textContent = results.phiFieldsIdentified;
+
+            // Show data preview
+            showDataPreview(results.cleanedData);
+
+            // Setup download buttons
+            setupDownloadButtons();
+        }
+
+        function showDataPreview(data) {
+            const previewDiv = document.getElementById('dataPreview');
+            
+            if (!data || data.length === 0) {
+                previewDiv.innerHTML = '<p>No data to preview</p>';
+                return;
+            }
+
+            // Create table
+            const table = document.createElement('table');
+            table.className = 'data-table';
+
+            // Create header
+            const thead = document.createElement('thead');
+            const headerRow = document.createElement('tr');
+            Object.keys(data[0]).forEach(key => {
+                const th = document.createElement('th');
+                th.textContent = key;
+                headerRow.appendChild(th);
+            });
+            thead.appendChild(headerRow);
+            table.appendChild(thead);
+
+            // Create body
+            const tbody = document.createElement('tbody');
+            data.slice(0, 5).forEach(row => {
+                const tr = document.createElement('tr');
+                Object.entries(row).forEach(([key, value]) => {
+                    const td = document.createElement('td');
+                    
+                    if (value === '[REDACTED_NAME]') {
+                        td.innerHTML = `<span class="redacted">${value}</span>`;
+                    } else if (key.includes('ID') && value.startsWith('CLM')) {
+                        td.innerHTML = `<span class="anonymized">${value}</span>`;
+                    } else {
+                        td.textContent = value;
+                    }
+                    
+                    tr.appendChild(td);
+                });
+                tbody.appendChild(tr);
+            });
+            table.appendChild(tbody);
+
+            previewDiv.innerHTML = '';
+            previewDiv.appendChild(table);
+        }
+
+        function setupDownloadButtons() {
+            document.getElementById('downloadCleanBtn').onclick = downloadCleanData;
+            document.getElementById('downloadReportBtn').onclick = downloadPrivacyReport;
+        }
+
+        function downloadCleanData() {
+            if (!processedData) return;
+
+            const csv = convertToCSV(processedData.cleanedData);
+            downloadFile(csv, 'cleaned_healthcare_data.csv', 'text/csv');
+        }
+
+        function downloadPrivacyReport() {
+            if (!privacyReport) return;
+
+            const json = JSON.stringify(privacyReport, null, 2);
+            downloadFile(json, 'privacy_report.json', 'application/json');
+        }
+
+        function convertToCSV(data) {
+            if (!data || data.length === 0) return '';
+
+            const headers = Object.keys(data[0]);
+            const csvContent = [
+                headers.join(','),
+                ...data.map(row => 
+                    headers.map(header => {
+                        const value = row[header] || '';
+                        return `"${value.toString().replace(/"/g, '""')}"`;
+                    }).join(',')
+                )
+            ].join('\n');
+
+            return csvContent;
+        }
+
+        function downloadFile(content, filename, contentType) {
+            const blob = new Blob([content], { type: contentType });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+
+        function showError(message) {
+            document.getElementById('processingSection').style.display = 'none';
+            document.getElementById('errorSection').style.display = 'block';
+            document.getElementById('errorMessage').textContent = message;
+        }
+
+        function resetInterface() {
+            document.getElementById('uploadSection').style.display = 'block';
+            document.getElementById('processingSection').style.display = 'none';
+            document.getElementById('resultsSection').style.display = 'none';
+            document.getElementById('errorSection').style.display = 'none';
+            document.getElementById('fileInput').value = '';
+            processedData = null;
+            privacyReport = null;
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+    </script>
+</body>
+</html>

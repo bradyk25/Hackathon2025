@@ -1,0 +1,53 @@
+{
+  "pii_detected": {
+    "CLAIM_ID": {
+      "type": "claim_identifier",
+      "confidence": 0.95
+    },
+    "MEMBER_ID": {
+      "type": "member_identifier",
+      "confidence": 0.95
+    },
+    "ID": {
+      "type": "patient_identifier",
+      "confidence": 0.95
+    },
+    "LAST_NAME": {
+      "type": "person_name",
+      "confidence": 0.98
+    },
+    "AGE": {
+      "type": "age",
+      "confidence": 0.9
+    },
+    "PROVIDER_ZIP": {
+      "type": "location",
+      "confidence": 0.85
+    }
+  },
+  "phi_detected": {
+    "DIAGNOSIS_CODE": {
+      "type": "medical_diagnosis",
+      "confidence": 0.95
+    },
+    "PROCEDURE_CODE": {
+      "type": "medical_procedure",
+      "confidence": 0.9
+    },
+    "DRG_CODE": {
+      "type": "medical_classification",
+      "confidence": 0.85
+    },
+    "ICD9_PROCEDURE": {
+      "type": "medical_procedure",
+      "confidence": 0.9
+    }
+  },
+  "summary": {
+    "total_records": 13,
+    "claims_records": 3,
+    "patient_records": 10,
+    "privacy_compliant": true,
+    "hipaa_compliant": true
+  }
+}

@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ghostwriter - Synthetic Healthcare Data Generator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+        .header p {
+            margin: 10px 0 0 0;
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+        .content {
+            padding: 40px;
+        }
+        .status-card {
+            background: #f8f9fa;
+            border-left: 5px solid #28a745;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 5px;
+        }
+        .status-card h3 {
+            margin: 0 0 10px 0;
+            color: #28a745;
+        }
+        .api-section {
+            margin-bottom: 40px;
+        }
+        .api-section h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 10px;
+        }
+        .endpoint {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .endpoint-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .method {
+            background: #007bff;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-right: 15px;
+            font-size: 0.9em;
+        }
+        .method.post {
+            background: #28a745;
+        }
+        .url {
+            font-family: 'Courier New', monospace;
+            background: #e9ecef;
+            padding: 5px 10px;
+            border-radius: 4px;
+            flex: 1;
+        }
+        .description {
+            color: #6c757d;
+            margin-bottom: 15px;
+        }
+        .test-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background 0.3s;
+        }
+        .test-button:hover {
+            background: #0056b3;
+        }
+        .response {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            border-left: 4px solid #007bff;
+            display: none;
+        }
+        .response pre {
+            margin: 0;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .feature-card {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 5px solid #007bff;
+        }
+        .feature-card h3 {
+            margin: 0 0 15px 0;
+            color: #2c3e50;
+        }
+        .feature-card ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .feature-card li {
+            margin-bottom: 8px;
+            color: #6c757d;
+        }
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏥 Ghostwriter</h1>
+            <p>Synthetic Healthcare Data Generator - Privacy-Safe AI Data Pipeline</p>
+        </div>
+        
+        <div class="content">
+            <div class="status-card">
+                <h3>✅ System Status: Running</h3>
+                <p>Python data pipeline is active on <strong>http://127.0.0.1:8001</strong></p>
+                <p>FastAPI server with automatic documentation available at <strong>http://127.0.0.1:8001/docs</strong></p>
+            </div>
+
+            <div class="api-section">
+                <h2>🔗 Available API Endpoints</h2>
+                
+                <div class="endpoint">
+                    <div class="endpoint-header">
+                        <span class="method">GET</span>
+                        <span class="url">http://127.0.0.1:8001/</span>
+                    </div>
+                    <div class="description">Health check endpoint - Returns system status and version information</div>
+                    <button class="test-button" onclick="testEndpoint('/', 'GET', null, 'health-response')">
+                        Test Health Check
+                    </button>
+                    <div id="health-response" class="response"></div>
+                </div>
+
+                <div class="endpoint">
+                    <div class="endpoint-header">
+                        <span class="method post">POST</span>
+                        <span class="url">http://127.0.0.1:8001/process</span>
+                    </div>
+                    <div class="description">Start processing a healthcare data file - Initiates the full data pipeline</div>
+                    <button class="test-button" onclick="showProcessExample()">
+                        View Example Request
+                    </button>
+                    <div id="process-response" class="response"></div>
+                </div>
+
+                <div class="endpoint">
+                    <div class="endpoint-header">
+                        <span class="method">GET</span>
+                        <span class="url">http://127.0.0.1:8001/status/{job_id}</span>
+                    </div>
+                    <div class="description">Get processing job status - Monitor progress of data processing jobs</div>
+                </div>
+
+                <div class="endpoint">
+                    <div class="endpoint-header">
+                        <span class="method">GET</span>
+                        <span class="url">http://127.0.0.1:8001/results/{job_id}</span>
+                    </div>
+                    <div class="description">Get processing results - Download synthetic data and reports</div>
+                </div>
+            </div>
+
+            <div class="features">
+                <div class="feature-card">
+                    <h3>🔍 Data Processing</h3>
+                    <ul>
+                        <li>Automatic file parsing (CSV, Excel, JSON)</li>
+                        <li>Healthcare data structure recognition</li>
+                        <li>Schema inference with type detection</li>
+                        <li>Data quality assessment</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3>🔒 Privacy Protection</h3>
+                    <ul>
+                        <li>PII/PHI detection and masking</li>
+                        <li>HIPAA compliance analysis</li>
+                        <li>Privacy risk assessment</li>
+                        <li>Differential privacy options</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3>🎯 Synthetic Data Generation</h3>
+                    <ul>
+                        <li>Statistical distribution matching</li>
+                        <li>Relationship preservation</li>
+                        <li>Configurable data multipliers</li>
+                        <li>Deterministic reproducibility</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3>📊 Validation & Reports</h3>
+                    <ul>
+                        <li>Quality metrics comparison</li>
+                        <li>Statistical validation tests</li>
+                        <li>Privacy compliance reports</li>
+                        <li>Downloadable results</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function testEndpoint(endpoint, method, data, responseId) {
+            const responseDiv = document.getElementById(responseId);
+            const button = event.target;
+            
+            // Show loading state
+            button.innerHTML = '<span class="loading"></span>Testing...';
+            button.disabled = true;
+            responseDiv.style.display = 'block';
+            responseDiv.innerHTML = '<pre>Loading...</pre>';
+            
+            try {
+                const options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                };
+                
+                if (data) {
+                    options.body = JSON.stringify(data);
+                }
+                
+                const response = await fetch(`http://127.0.0.1:8001${endpoint}`, options);
+                const result = await response.json();
+                
+                responseDiv.innerHTML = `
+                    <strong>Status:</strong> ${response.status} ${response.statusText}<br>
+                    <strong>Response:</strong>
+                    <pre>${JSON.stringify(result, null, 2)}</pre>
+                `;
+                
+            } catch (error) {
+                responseDiv.innerHTML = `
+                    <strong>Error:</strong> ${error.message}<br>
+                    <em>Make sure the server is running on http://127.0.0.1:8001</em>
+                `;
+            }
+            
+            // Reset button
+            button.innerHTML = 'Test Health Check';
+            button.disabled = false;
+        }
+        
+        function showProcessExample() {
+            const responseDiv = document.getElementById('process-response');
+            responseDiv.style.display = 'block';
+            responseDiv.innerHTML = `
+                <strong>Example POST Request:</strong>
+                <pre>{
+  "file_path": "/path/to/healthcare_data.zip",
+  "options": {
+    "synthetic_multiplier": 10,
+    "random_seed": 42,
+    "enable_privacy_analysis": true
+  }
+}</pre>
+                <strong>Example Response:</strong>
+                <pre>{
+  "job_id": "123e4567-e89b-12d3-a456-426614174000",
+  "status": "started",
+  "steps": [
+    "file_extraction",
+    "schema_inference",
+    "privacy_analysis",
+    "data_synthesis",
+    "validation",
+    "report_generation"
+  ]
+}</pre>
+            `;
+        }
+        
+        // Auto-test health endpoint on page load
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                document.querySelector('.test-button').click();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
