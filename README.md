@@ -41,25 +41,25 @@ This hackathon project transforms messy, inconsistent healthcare data into trust
 
 ### Friday Evening
 - [x] Project setup and structure
-- [ ] Basic frontend scaffolding
-- [ ] Backend API foundation
-- [ ] Data ingestion pipeline setup
+- [x] Basic frontend scaffolding
+- [x] Backend API foundation
+- [x] Data ingestion pipeline setup
 
 ### Saturday Morning
-- [ ] Schema inference implementation
-- [ ] PII/PHI detection system
-- [ ] Basic synthetic data generation
-- [ ] File processing pipeline
+- [x] Schema inference implementation
+- [x] PII/PHI detection system
+- [x] Basic synthetic data generation
+- [x] File processing pipeline
 
 ### Saturday Evening
-- [ ] Validation and metrics system
-- [ ] Report generation
-- [ ] Frontend-backend integration
-- [ ] Basic chatbot integration
+- [x] Validation and metrics system
+- [x] Report generation
+- [x] Frontend-backend integration
+- [x] Basic chatbot integration
 
 ### Sunday Morning
-- [ ] Testing and debugging
-- [ ] UI/UX improvements
+- [x] Testing and debugging
+- [x] UI/UX improvements
 - [ ] Documentation
 - [ ] Demo preparation
 
@@ -111,3 +111,11 @@ This is a hackathon project. See `CONTRIBUTING.md` for development guidelines.
 
 ## License
 MIT License - see LICENSE file for details.
+
+## Contributors
+Full-stack/System designer ----- https://www.linkedin.com/in/thanghua20/
+Algorithmic architect ----- https://www.linkedin.com/in/aidanjmartin/
+UX ----- https://www.linkedin.com/in/hernan-hernandez-4a796328a/
+Frame HTML Styling ----- https://www.linkedin.com/in/gabrielle-miller-mtsu/
+ML theorist ----- https://www.linkedin.com/in/carol-li-217664326/
+Prompt/Framework engineer ----- https://www.linkedin.com/in/brady-reed/
